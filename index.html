@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кровные Линии Чикаго — Vampire: The Masquerade</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --bg2: #111116;
+    --bg3: #1a1a22;
+    --fg: #e8e4df;
+    --fg-muted: #8a8680;
+    --accent: #8b1a1a;
+    --accent-light: #c62828;
+    --accent-glow: rgba(139, 26, 26, 0.4);
+    --gold: #c9a84c;
+    --gold-muted: rgba(201, 168, 76, 0.3);
+    --card: #15151b;
+    --border: #2a2a35;
+    --clan-ventrue: #6d4c7d;
+    --clan-toreador: #c97b84;
+    --clan-brujah: #8b3a3a;
+    --clan-malkavian: #5c7a8a;
+    --clan-nosferatu: #4a5e3a;
+    --clan-gangrel: #7a6b3a;
+    --clan-tremere: #3a5c8a;
+    --clan-lasombra: #2a2a4a;
+    --clan-tzimisce: #5a3a5a;
+    --clan-setite: #6a5a2a;
+    --clan-giovanni: #3a4a3a;
+    --clan-ravnos: #8a6a3a;
+    --clan-assamite: #4a3a2a;
+    --clan-daughter: #7a4a6a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Nunito Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === ФОНОВАЯ АТМОСФЕРА === */
+  .bg-atmosphere {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 800px 600px at 20% 20%, rgba(139,26,26,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 600px 800px at 80% 80%, rgba(90,20,20,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 400px at 50% 50%, rgba(201,168,76,0.03) 0%, transparent 70%);
+  }
+
+  .blood-drip {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+
+  .blood-particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: bloodFall linear infinite;
+  }
+
+  @keyframes bloodFall {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(100vh); }
+  }
+
+  /* === ТИПОГРАФИКА === */
+  h1, h2, h3, h4 { font-family: 'Cinzel', serif; }
+
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 0.3em;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 60%; height: 2px;
+    background: linear-gradient(90deg, var(--accent-light), transparent);
+  }
+
+  .section-subtitle {
+    color: var(--fg-muted);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  /* === НАВИГАЦИЯ === */
+  nav {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+    background: rgba(10,10,12,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+    transition: box-shadow 0.3s;
+  }
+
+  nav.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: var(--accent-light);
+    letter-spacing: 0.05em;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .nav-logo i { font-size: 1.3rem; }
+
+  .nav-links {
+    display: flex; gap: 1.5rem; list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--fg-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--accent-light);
+  }
+
+  /* === HERO === */
+  .hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 100% 80% at 50% 30%, rgba(139,26,26,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 30% 70%, rgba(42,10,10,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 60% at 70% 60%, rgba(80,20,20,0.1) 0%, transparent 50%);
+    z-index: 0;
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+  .hero-icon {
+    font-size: 3rem;
+    color: var(--accent-light);
+    margin-bottom: 1rem;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--fg) 0%, var(--accent-light) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .tagline {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero .desc {
+    color: var(--fg-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+
+  .hero-stats {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat .num {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--accent-light);
+  }
+
+  .hero-stat .label {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* === СЕКЦИИ === */
+  .container {
+    position: relative; z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  section { padding: 4rem 0; }
+
+  /* === КАРТОЧКИ КЛАНОВ === */
+  .clan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .clan-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .clan-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--clan-color, var(--accent));
+    transition: height 0.3s;
+  }
+
+  .clan-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--clan-color, var(--accent));
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4), 0 0 20px var(--accent-glow);
+  }
+
+  .clan-card:hover::before { height: 4px; }
+
+  .clan-card-header {
+    display: flex; align-items: center; gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .clan-icon {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    background: var(--clan-color, var(--accent));
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .clan-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .clan-nick {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    font-style: italic;
+  }
+
+  .clan-desc {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+  }
+
+  .clan-disciplines {
+    display: flex; gap: 0.4rem; flex-wrap: wrap;
+  }
+
+  .disc-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--fg-muted);
+  }
+
+  /* === ФИЛЬТРЫ И УПРАВЛЕНИЕ === */
+  .controls-bar {
+    display: flex; align-items: center; gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .filter-group {
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .filter-label {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  select, .input-field {
+    background: var(--bg2);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  select:focus, .input-field:focus {
+    border-color: var(--accent-light);
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg2);
+    color: var(--fg);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    border-color: var(--accent-light);
+    background: rgba(139,26,26,0.15);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent-light);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-light);
+    box-shadow: 0 0 15px var(--accent-glow);
+  }
+
+  .btn-danger {
+    border-color: #5a2020;
+    color: #e57373;
+  }
+
+  .btn-danger:hover {
+    background: rgba(198,40,40,0.15);
+    border-color: #c62828;
+  }
+
+  .spacer { flex: 1; }
+
+  /* === ТАБЛИЦА КРОВНЫХ ЛИНИЙ === */
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+  }
+
+  .blood-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+  }
+
+  .blood-table th {
+    background: var(--bg3);
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    padding: 0.8rem 1rem;
+    border-bottom: 2px solid var(--accent);
+    text-align: left;
+    position: sticky; top: 0; z-index: 2;
+  }
+
+  .blood-table th:first-child {
+    width: 160px;
+  }
+
+  .blood-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    vertical-align: top;
+  }
+
+  .blood-table tr:hover td {
+    background: rgba(139,26,26,0.05);
+  }
+
+  .blood-table .clan-cell {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    position: relative;
+  }
+
+  .clan-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .char-entry {
+    display: flex; flex-direction: column; gap: 0.15rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 0.4rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .char-entry:hover {
+    border-color: var(--accent);
+    background: rgba(139,26,26,0.08);
+  }
+
+  .char-entry.player-char {
+    border-left: 3px solid var(--gold);
+  }
+
+  .char-entry.no-sheet {
+    opacity: 0.5;
+  }
+
+  .char-name {
+    font-weight: 600;
+    color: var(--fg);
+    font-size: 0.85rem;
+  }
+
+  .char-detail {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+  }
+
+  .char-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+  }
+
+  .badge-player {
+    background: var(--gold-muted);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.4);
+  }
+
+  .badge-nosheet {
+    background: rgba(255,255,255,0.05);
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
+  }
+
+  .badge-custom {
+    background: rgba(76,175,80,0.15);
+    color: #81c784;
+    border: 1px solid rgba(76,175,80,0.3);
+  }
+
+  .char-actions {
+    position: absolute;
+    top: 0.3rem; right: 0.3rem;
+    display: none; gap: 0.2rem;
+  }
+
+  .char-entry:hover .char-actions { display: flex; }
+
+  .char-action-btn {
+    width: 20px; height: 20px;
+    border: none; border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    color: var(--fg-muted);
+    font-size: 0.65rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .char-action-btn:hover {
+    background: rgba(198,40,40,0.3);
+    color: #e57373;
+  }
+
+  .gen-header {
+    text-align: center;
+  }
+
+  /* === МОДАЛЬНОЕ ОКНО === */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: none; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%; max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    width: 32px; height: 32px;
+    border: none; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    color: var(--fg-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover {
+    background: rgba(198,40,40,0.2);
+    color: #e57373;
+  }
+
+  .modal h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    color: var(--fg);
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .form-group .input-field,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.55rem 0.8rem;
+  }
+
+  .form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .form-actions {
+    display: flex; gap: 0.8rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+  }
+
+  /* === ДЕТАЛИ ПЕРСОНАЖА === */
+  .detail-modal .char-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .detail-modal .char-clan-gen {
+    color: var(--fg-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .detail-modal .char-description {
+    color: var(--fg);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .detail-section {
+    margin-bottom: 1rem;
+  }
+
+  .detail-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .trait-list {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+  }
+
+  /* === TOAST === */
+  .toast-container {
+    position: fixed; bottom: 2rem; right: 2rem;
+    z-index: 300;
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+
+  .toast {
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    font-size: 0.85rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .toast.success { border-color: #4caf50; }
+  .toast.success i { color: #81c784; }
+  .toast.error { border-color: #c62828; }
+  .toast.error i { color: #e57373; }
+
+  @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(30px); } }
+
+  /* === FOOTER === */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 0.8rem;
+    position: relative; z-index: 1;
+  }
+
+  footer .ack {
+    color: var(--accent-light);
+    font-weight: 600;
+  }
+
+  /* === SCROLL REVEAL === */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* === TABS === */
+  .tab-bar {
+    display: flex; gap: 0; margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .tab-btn {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    background: none;
+    color: var(--fg-muted);
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .tab-btn::after {
+    content: '';
+    position: absolute; bottom: -2px; left: 0;
+    width: 100%; height: 2px;
+    background: var(--accent-light);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+
+  .tab-btn.active { color: var(--fg); }
+  .tab-btn.active::after { transform: scaleX(1); }
+  .tab-btn:hover { color: var(--fg); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    nav { padding: 0 1rem; }
+    .nav-links { gap: 0.8rem; }
+    .nav-links a { font-size: 0.75rem; }
+    .hero { min-height: 60vh; padding: 5rem 1rem 3rem; }
+    .container { padding: 0 1rem; }
+    .controls-bar { flex-direction: column; align-items: stretch; }
+    .spacer { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Фоновая атмосфера -->
+<div class="bg-atmosphere"></div>
+<div class="blood-drip" id="bloodDrip"></div>
+
+<!-- Навигация -->
+<nav id="mainNav">
+  <div class="nav-logo">
+    <i class="fas fa-skull-crossbones"></i>
+    Кровные Линии Чикаго
+  </div>
+  <ul class="nav-links">
+    <a onclick="scrollToSection('hero')">Начало</a>
+    <a onclick="scrollToSection('clans')">Кланы</a>
+    <a onclick="scrollToSection('bloodlines')">Кровные Линии</a>
+    <a onclick="scrollToSection('generations')">Поколения</a>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-icon"><i class="fas fa-shield-alt"></i></div>
+    <h1>Кровные Линии Чикаго</h1>
+    <div class="tagline">Vampire: The Masquerade</div>
+    <p class="desc">
+      Интерактивная карта вампирских кровных линий Чикаго — от древних старейшин 6-го поколения до неоноватов 11-го. Отслеживайте иерархию, добавляйте своих персонажей и ведите хронику Каинитов.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num" id="statClans">13</div>
+        <div class="label">Кланов</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" id="statChars">0</div>
+        <div class="label">Персонажей</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" id="statGens">6</div>
+        <div class="label">Поколений</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Кланы -->
+<section id="clans">
+  <div class="container reveal">
+    <div class="section-title">Кланы Каинитов</div>
+    <div class="section-subtitle">Тринадцать великих кровных линий потомков Каина</div>
+    <div class="clan-grid" id="clanGrid"></div>
+  </div>
+</section>
+
+<!-- Кровные Линии + Поколения (Tabs) -->
+<section id="bloodlines">
+  <div class="container reveal">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('table')">
+        <i class="fas fa-table"></i> Кровные Линии
+      </button>
+      <button class="tab-btn" onclick="switchTab('generations')">
+        <i class="fas fa-layer-group"></i> Поколения
+      </button>
+    </div>
+
+    <!-- ТАБЛИЦА -->
+    <div class="tab-content active" id="tab-table">
+      <div class="controls-bar">
+        <div class="filter-group">
+          <span class="filter-label">Клан:</span>
+          <select id="filterClan" onchange="renderTable()">
+            <option value="all">Все кланы</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Поколение:</span>
+          <select id="filterGen" onchange="renderTable()">
+            <option value="all">Все</option>
+            <option value="6">6-е</option>
+            <option value="7">7-е</option>
+            <option value="8">8-е</option>
+            <option value="9">9-е</option>
+            <option value="10">10-е</option>
+            <option value="11">11-е</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Поиск:</span>
+          <input type="text" class="input-field" id="searchName" placeholder="Имя персонажа..." oninput="renderTable()" style="width:180px">
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="openAddModal()">
+          <i class="fas fa-plus"></i> Добавить персонажа
+        </button>
+        <button class="btn" onclick="exportData()">
+          <i class="fas fa-download"></i> Экспорт
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="blood-table" id="bloodTable">
+          <thead>
+            <tr id="tableHeader"></tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ПОКОЛЕНИЯ -->
+    <div class="tab-content" id="tab-generations">
+      <div id="genCards"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Модальное окно: Добавить/Редактировать персонажа -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAddModal()"><i class="fas fa-times"></i></button>
+    <h3 id="modalTitle">Добавить персонажа</h3>
+    <input type="hidden" id="editId">
+    <div class="form-group">
+      <label>Имя</label>
+      <input type="text" class="input-field" id="fName" placeholder="Например: Эдвард Хардн">
+    </div>
+    <div class="form-group">
+      <label>Клан</label>
+      <select id="fClan"></select>
+    </div>
+    <div class="form-group">
+      <label>Поколение</label>
+      <select id="fGen">
+        <option value="6">6-е</option>
+        <option value="7">7-е</option>
+        <option value="8">8-е</option>
+        <option value="9">9-е</option>
+        <option value="10">10-е</option>
+        <option value="11">11-е</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Сир (Создатель)</label>
+      <input type="text" class="input-field" id="fSire" placeholder="Имя сира">
+    </div>
+    <div class="form-group">
+      <label>Описание</label>
+      <textarea class="input-field" id="fDesc" placeholder="Краткое описание персонажа..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Статус</label>
+      <select id="fStatus">
+        <option value="active">Активен</option>
+        <option value="player">Персонаж игрока</option>
+        <option value="nosheet">Нет листа</option>
+        <option value="dead">Уничтожен</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeAddModal()">Отмена</button>
+      <button class="btn btn-primary" onclick="saveCharacter()">
+        <i class="fas fa-save"></i> Сохранить
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно: Детали персонажа -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal detail-modal">
+    <button class="modal-close" onclick="closeDetailModal()"><i class="fas fa-times"></i></button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Footer -->
+<footer id="generations">
+  <p>Создано для хроники <span class="ack">Vampire: The Masquerade</span></p>
+  <p style="margin-top:0.3rem">World of Darkness принадлежит Paradox Interactive. Все персонажи — собственность их создателей.</p>
+</footer>
+
+<script>
+// === ДАННЫЕ КЛАНОВ ===
+const CLANS = [
+  {
+    id: 'ventrue', name: 'Вентру', nick: 'Клан Вооружённых',
+    color: '#6d4c7d', icon: 'fa-crown',
+    desc: 'Аристократы вампирского общества. Вентру считают себя правителями по праву крови — и обычно у них есть власть, чтобы это доказать. Чикаго — их город, и они это помнят.',
+    disciplines: ['Влияние', 'Стойкость', 'Доминирование'],
+    weakness: 'Могут питаться только от определённого типа смертных'
+  },
+  {
+    id: 'toreador', name: 'Торнадор', nick: 'Клан Розы',
+    color: '#c97b84', icon: 'fa-palette',
+    desc: 'Художники и эстеты, Торнадор пленены красотой. Они — покровители искусств и собиратели прекрасного, но их одержимость может стать их проклятием.',
+    disciplines: ['Обfuscate', 'Прорицание', 'Стойкость'],
+    weakness: 'Одержимы красотой — могут быть парализованы эстетическим переживанием'
+  },
+  {
+    id: 'brujah', name: 'Бруха', nick: 'Клан Учёных',
+    color: '#8b3a3a', icon: 'fa-fist-raised',
+    desc: 'Некогда философы-мыслители, теперь — бунтари и боевики. Бруха — сердце анархического движения, и в Чикаго они борются за каждый клочок территории.',
+    disciplines: ['Celerity', 'Потенция', 'Прорицание'],
+    weakness: 'Легко впадают в ярость — сложнее сопротивляться Безумию'
+  },
+  {
+    id: 'malkavian', name: 'Малкавиан', nick: 'Клан Лунного Безумия',
+    color: '#5c7a8a', icon: 'fa-eye',
+    desc: 'Каждый Малкавиан безумен — и каждое безумие уникально. Их Прорицание, Орacle, открывает им истины, которые никто не видит, и безумие, которое никто не разделяет.',
+    disciplines: ['Обfuscate', 'Dominate', 'Прорицание'],
+    weakness: 'Неизлечимое безумие при Становлении'
+  },
+  {
+    id: 'nosferatu', name: 'Носферату', nick: 'Клан Теней',
+    color: '#4a5e3a', icon: 'fa-spider',
+    desc: 'Искажённые и ужасающие, Носферату живут в сточных трубах и туннелях под городом. Но то, что они теряют в красоте, они компенсируют информацией — шпионаж — их искусство.',
+    disciplines: ['Обfuscate', 'Animalism', 'Potence'],
+    weakness: 'Все Носферату уродливы — появление 0'
+  },
+  {
+    id: 'gangrel', name: 'Гангрел', nick: 'Клан Зверя',
+    color: '#7a6b3a', icon: 'fa-paw',
+    desc: 'Одиночки и бродяги, Гангрел ближе всех к Зверю. В ярости они принимают звериные черты — и каждый шрам остаётся навсегда.',
+    disciplines: ['Animalism', 'Fortitude', 'Protean'],
+    weakness: 'При ярости приобретают звериную черту'
+  },
+  {
+    id: 'tremere', name: 'Тремер', nick: 'Клан Колдунов',
+    color: '#3a5c8a', icon: 'fa-hat-wizard',
+    desc: 'Молодой клан, созданный магией, а не кровью Каина. Тремер — строгая иерархия магов-вампиров, и их Тавматургия — самое могущественное волшебство среди Каинитов.',
+    disciplines: ['Тавматургия', 'Обfuscate', 'Dominate'],
+    weakness: 'Кровь Тремер связана с кланом — нельзя Становить без разрешения'
+  },
+  {
+    id: 'lasombra', name: 'Ласомбра', nick: 'Клан Тени',
+    color: '#2a2a4a', icon: 'fa-moon',
+    desc: 'Мастера тени и лидеры Шабаша. Ласомбра манипулируют самой тьмой, и их амбиции простираются на весь Мир Тьмы. В Чикаго они — главная угроза Камарильи.',
+    disciplines: ['Доминирование', 'Obtenebration', 'Потенция'],
+    weakness: 'Нет отражения в зеркалах и на плёнке'
+  },
+  {
+    id: 'tzimisce', name: 'Цимисхи', nick: 'Клан Изменения',
+    color: '#5a3a5a', icon: 'fa-dna',
+    desc: 'Флешкрафтеры и философы плоти. Цимисхи изменяют тела и разум с одинаковой лёгкостью. Их Виккуд — власть над самой формой жизни.',
+    disciplines: ['Animalism', 'Auspex', 'Vicissitude'],
+    weakness: 'Должны спать на родной земле (по горсти земли с родины)'
+  },
+  {
+    id: 'setite', name: 'Сетиты', nick: 'Клан Змеиного Культа',
+    color: '#6a5a2a', icon: 'fa-snake',
+    desc: 'Последователи Сета, древнего египетского бога-змея. Сетиты — коррумпированные дельцы и лидеры культов, работающие на уничтожение всех устоев смертного общества.',
+    disciplines: ['Obfuscate', 'Прорицание', 'Serpentis'],
+    weakness: 'Уязвимы к свету — штрафы при ярком освещении'
+  },
+  {
+    id: 'giovanni', name: 'Джованни', nick: 'Клан Некромантов',
+    color: '#3a4a3a', icon: 'fa-skull',
+    desc: 'Итальянская мафиозная семья ставшая кланом. Джованни — некроманты и дельцы, и они обращаются с мёртвыми так же прагматично, как со своими счетами.',
+    disciplines: ['Dominate', 'Necromancy', 'Потенция'],
+    weakness: 'Укус Джованни причиняет боль жертве вместо удовольствия'
+  },
+  {
+    id: 'ravnos', name: 'Равнос', nick: 'Клан Цыган',
+    color: '#8a6a3a', icon: 'fa-caravan',
+    desc: 'Кочевники и иллюзионисты, Равнос — вечные странники. Их Химерия создаёт иллюзии, которые могут обмануть любой разум.',
+    disciplines: ['Animalism', 'Chimerstry', 'Fortitude'],
+    weakness: 'Подвержены пороку — каждая ночь нужно совершить злодейство'
+  },
+  {
+    id: 'assamite', name: 'Ассамиты', nick: 'Клан Ордена Assassins',
+    color: '#4a3a2a', icon: 'fa-crosshairs',
+    desc: 'Горные убийцы и вероисповедники крови. Ассамиты служат Хакиму, древнему, и их искусство смерти — самое утончённое в Мире Тьмы.',
+    disciplines: ['Celerity', 'Obfuscate', 'Quietus'],
+    weakness: 'Жажда крови вампиров — addict-эффект к Каинитской крови'
+  }
+];
+
+// === ПЕРСОНАЖИ ЧИКАГО (базовые данные) ===
+let characters = [];
+let nextId = 1;
+
+const BASE_CHARACTERS = [
+  // Вентру
+  { clan: 'ventrue', gen: 6, name: 'Лодин', sire: 'Мэтриарх', desc: 'Князь Чикаго. Древний Вентру 6-го поколения, правящий городом железной волей уже несколько столетий.', status: 'active' },
+  { clan: 'ventrue', gen: 7, name: 'Эдвард Вурхис', sire: 'Лодин', desc: 'Примоген Вентру и финансовый магнат. Контролирует банковский сектор Чикаго.', status: 'active' },
+  { clan: 'ventrue', gen: 8, name: 'Арчибальд Брюстер', sire: 'Эдвард Вурхис', desc: 'Старший советник примогена. Держит связи с городской администрацией.', status: 'active' },
+  { clan: 'ventrue', gen: 9, name: 'Аманда Паттерсон', sire: 'Арчибальд Брюстер', desc: 'Молодой Вентру, курирующая медиа-холдинги.', status: 'player' },
+  { clan: 'ventrue', gen: 10, name: 'Дэниел Крокер', sire: 'Аманда Паттерсон', desc: 'Неонат, занимающийся корпоративным шпионажем.', status: 'active' },
+
+  // Торнадор
+  { clan: 'toreador', gen: 7, name: 'Эмилия Три', sire: 'Митрас', desc: 'Примоген Торнадор и покровительница искусств. Владеет галереей в River North.', status: 'active' },
+  { clan: 'toreador', gen: 8, name: 'Аннабель', sire: 'Эмилия Три', desc: 'Модная дизайнер и светская львица. Её вечеринки — легенда Каинитского общества.', status: 'active' },
+  { clan: 'toreador', gen: 8, name: 'Виктор Тайлер', sire: 'Эмилия Три', desc: 'Архитектор и коллекционер. Спонсирует реставрацию исторических зданий.', status: 'active' },
+  { clan: 'toreador', gen: 9, name: 'Изабель Гарсиа', sire: 'Аннабель', desc: 'Музыкант и композитор. Организует концерты для Каинитской элиты.', status: 'player' },
+  { clan: 'toreador', gen: 10, name: 'Марк Де Ври', sire: 'Виктор Тайлер', desc: 'Художник-авангардист, недавно Становлённый.', status: 'nosheet' },
+  { clan: 'toreador', gen: 11, name: 'Клэр Дюваль', sire: 'Изабель Гарсиа', desc: 'Танцовщица и неонат. Ещё не освоилась в вампирском обществе.', status: 'nosheet' },
+
+  // Бруха
+  { clan: 'brujah', gen: 7, name: 'Критиас', sire: 'Древний Бруха', desc: 'Старейшина Бруха, бывший философ Древней Греции. Теперь — яростный защитник Анархов.', status: 'active' },
+  { clan: 'brujah', gen: 8, name: 'Тайлер', sire: 'Критиас', desc: 'Анарх-лидер в Университетском районе. Преподаёт историю — по-своему.', status: 'active' },
+  { clan: 'brujah', gen: 9, name: 'Гатри', sire: 'Тайлер', desc: 'Боец и телохранитель. Предводитель уличной банды Бруха.', status: 'active' },
+  { clan: 'brujah', gen: 9, name: 'Рик Кавальере', sire: 'Тайлер', desc: 'Мотоциклист и механик. Держит нелегальную мастерскую.', status: 'player' },
+  { clan: 'brujah', gen: 10, name: 'Донна Сантьяго', sire: 'Гатри', desc: 'Молодой Анарх, координирующая сеть безопасных домов.', status: 'active' },
+
+  // Малкавиан
+  { clan: 'malkavian', gen: 7, name: 'Маузелус', sire: 'Неизвестный Малкавиан', desc: 'Примоген Малкавиан. Его прорицания странны, но пугающе точны.', status: 'active' },
+  { clan: 'malkavian', gen: 8, name: 'Эйприл', sire: 'Маузелус', desc: 'Хакер и шифровальщица. Видит паттерны там, где другие видят хаос.', status: 'active' },
+  { clan: 'malkavian', gen: 9, name: 'Доктор Джон', sire: 'Эйприл', desc: 'Бывший хирург. Теперь лечит Каинитов — методами, которые никто не понимает.', status: 'player' },
+  { clan: 'malkavian', gen: 10, name: 'Сильвия', sire: 'Доктор Джон', desc: 'Слышит голоса зданий. Утверждает, что Чикаго — живое.', status: 'nosheet' },
+
+  // Носферату
+  { clan: 'nosferatu', gen: 7, name: 'Городской Отец', sire: 'Древний Носферату', desc: 'Примоген Носферату. Знает каждый секрет Чикаго. Никто не видел его лица.', status: 'active' },
+  { clan: 'nosferatu', gen: 8, name: 'Стефан Лонгериус', sire: 'Городской Отец', desc: 'Хранитель катакомб и туннелей. Составляет карты подземного Чикаго.', status: 'active' },
+  { clan: 'nosferatu', gen: 9, name: 'Мать Клотильда', sire: 'Стефан Лонгериус', desc: 'Информатор и посредница. Если вам нужны слухи — идите к ней.', status: 'active' },
+  { clan: 'nosferatu', gen: 10, name: 'Глен', sire: 'Мать Клотильда', desc: 'Хакер и технарь. Обеспечивает цифровую безопасность клана.', status: 'player' },
+
+  // Гангрел
+  { clan: 'gangrel', gen: 7, name: 'Инари', sire: 'Древний Гангрел', desc: 'Старейшина Гангрел, редко появляется в городе. Предпочитает леса и парки.', status: 'active' },
+  { clan: 'gangrel', gen: 8, name: 'Карканова', sire: 'Инари', desc: 'Самка-вожак стаи Гангрел в пригородных лесах. Форма: волчица.', status: 'active' },
+  { clan: 'gangrel', gen: 9, name: 'Родриго', sire: 'Карканова', desc: 'Одинокий охотник. Патрулирует границы территории Камарильи.', status: 'player' },
+  { clan: 'gangrel', gen: 10, name: 'Рейчел', sire: 'Родриго', desc: 'Неонат, работающая ветеринаром как прикрытие.', status: 'active' },
+
+  // Тремер
+  { clan: 'tremere', gen: 7, name: 'Максимилиан Страс', sire: 'КCouncil Тремер', desc: 'Примоген Тремер и глава Чантели в Чикаго. Мастер Тавматургии Пути Крови.', status: 'active' },
+  { clan: 'tremere', gen: 8, name: 'Анита Вэйнрайт', sire: 'Максимилиан Страс', desc: 'Исследователь ритуалов. Работает над модификацией Пути Фламен.', status: 'active' },
+  { clan: 'tremere', gen: 9, name: 'Карл', sire: 'Анита Вэйнрайт', desc: 'Практик Пути Духов. Вызывает привязанности на связь с миром мёртвых.', status: 'active' },
+  { clan: 'tremere', gen: 10, name: 'Елена Морозова', sire: 'Карл', desc: 'Молодой тавматург, специализирующаяся на Пути Затмения.', status: 'player' },
+
+  // Ласомбра
+  { clan: 'lasombra', gen: 8, name: 'Монсеньор Ордо', sire: 'Архиепископ Шабаша', desc: 'Епископ Шабаша в Чикаго. Управляет тенями как расширениями своей воли.', status: 'active' },
+  { clan: 'lasombra', gen: 9, name: 'Талия Блэквуд', sire: 'Монсеньор Ордо', desc: 'Жрица Шабаша и мастер Obtenebration. Координирует набеги на Камарилью.', status: 'active' },
+  { clan: 'lasombra', gen: 10, name: 'Виктор Сальвадор', sire: 'Талия Блэквуд', desc: 'Шабашит-боевик. Участвует в рейдах и охоте на Камарилью.', status: 'nosheet' },
+
+  // Цимисхи
+  { clan: 'tzimisce', gen: 8, name: 'Войвода Стефан', sire: 'Древний Цимисхи', desc: 'Шабашитский Прист и мастер Виккуд. Его сады плоти — кошмар для пленников.', status: 'active' },
+  { clan: 'tzimisce', gen: 9, name: 'Ламбрах', sire: 'Войвода Стефан', desc: 'Ученик Стефана, совершенствующий искусство изменения плоти.', status: 'active' },
+
+  // Сетиты
+  { clan: 'setite', gen: 8, name: 'Сетна', sire: 'Жрец Сета', desc: 'Главный агент Сетитов в Чикаго. Управляет сетью контрабанды и культа.', status: 'active' },
+  { clan: 'setite', gen: 10, name: 'Хасан', sire: 'Сетна', desc: 'Вербоует последователей в бедных районах города.', status: 'nosheet' },
+
+  // Джованни
+  { clan: 'giovanni', gen: 8, name: 'Дон Джованни Агнелли', sire: 'Augustus Giovanni', desc: 'Глава семьи Джованни в Чикаго. Некромант и бизнесмен.', status: 'active' },
+  { clan: 'giovanni', gen: 10, name: 'Мария Джованни', sire: 'Дон Джованни Агнелли', desc: 'Некромант-практик. Работает с призраками на кладбищах Чикаго.', status: 'nosheet' },
+
+  // Равнос
+  { clan: 'ravnos', gen: 9, name: 'Джиган', sire: 'Странствующий Равнос', desc: 'Главный Равнос в городе. Мастер иллюзий и карточных игр.', status: 'active' },
+  { clan: 'ravnos', gen: 11, name: 'Саша', sire: 'Джиган', desc: 'Молодой Равнос, работающий уличным фокусником.', status: 'nosheet' },
+
+  // Ассамиты
+  { clan: 'assamite', gen: 8, name: 'Али-Азиз', sire: 'Старейшина Ассамитов', desc: 'Главный контрактный убийца Каинитов в Чикаго. Его услуги стоят крови.', status: 'active' },
+  { clan: 'assamite', gen: 10, name: 'Фатима', sire: 'Али-Азиз', desc: 'Ученица и ассасин-в-обучении. Выполняет мелкие контракты.', status: 'nosheet' }
+];
+
+// === ИНИЦИАЛИЗАЦИЯ ===
+function init() {
+  // Загружаем из localStorage или используем базовые данные
+  const saved = localStorage.getItem('vtm_chicago_chars');
+  if (saved) {
+    try {
+      characters = JSON.parse(saved);
+      nextId = Math.max(...characters.map(c => c.id), 0) + 1;
+    } catch(e) {
+      loadBaseCharacters();
+    }
+  } else {
+    loadBaseCharacters();
+  }
+
+  createBloodParticles();
+  renderClanCards();
+  populateFilterClan();
+  populateFormClan();
+  renderTable();
+  renderGenerationCards();
+  updateStats();
+  setupScrollReveal();
+  setupNavScroll();
+}
+
+function loadBaseCharacters() {
+  characters = [];
+  nextId = 1;
+  BASE_CHARACTERS.forEach(bc => {
+    characters.push({ id: nextId++, ...bc, custom: false });
+  });
+  saveData();
+}
+
+function saveData() {
+  localStorage.setItem('vtm_chicago_chars', JSON.stringify(characters));
+}
+
+// === ЧАСТИЦЫ КРОВИ ===
+function createBloodParticles() {
+  const container = document.getElementById('bloodDrip');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'blood-particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    p.style.width = (1 + Math.random() * 2) + 'px';
+    p.style.height = p.style.width;
+    container.appendChild(p);
+  }
+}
+
+// === КАРТОЧКИ КЛАНОВ ===
+function renderClanCards() {
+  const grid = document.getElementById('clanGrid');
+  grid.innerHTML = CLANS.map(clan => `
+    <div class="clan-card" style="--clan-color: ${clan.color}" onclick="filterByClan('${clan.id}')">
+      <div class="clan-card-header">
+        <div class="clan-icon" style="background: ${clan.color}">
+          <i class="fas ${clan.icon}"></i>
+        </div>
+        <div>
+          <div class="clan-name">${clan.name}</div>
+          <div class="clan-nick">${clan.nick}</div>
+        </div>
+      </div>
+      <div class="clan-desc">${clan.desc}</div>
+      <div class="clan-disciplines">
+        ${clan.disciplines.map(d => `<span class="disc-tag">${d}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterByClan(clanId) {
+  document.getElementById('filterClan').value = clanId;
+  renderTable();
+  scrollToSection('bloodlines');
+  switchTab('table');
+}
+
+// === ЗАПОЛНЕНИЕ ФИЛЬТРОВ ===
+function populateFilterClan() {
+  const sel = document.getElementById('filterClan');
+  CLANS.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+}
+
+function populateFormClan() {
+  const sel = document.getElementById('fClan');
+  sel.innerHTML = '';
+  CLANS.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+}
+
+// === РЕНДЕР ТАБЛИЦЫ ===
+function renderTable() {
+  const filterClan = document.getElementById('filterClan').value;
+  const filterGen = document.getElementById('filterGen').value;
+  const searchName = document.getElementById('searchName').value.toLowerCase().trim();
+
+  // Определяем какие кланы и поколения показывать
+  const showClans = filterClan === 'all' ? CLANS.map(c => c.id) : [filterClan];
+  const showGens = filterGen === 'all' ? [6,7,8,9,10,11] : [parseInt(filterGen)];
+
+  // Заголовок
+  const header = document.getElementById('tableHeader');
+  header.innerHTML = `<th>Клан</th>` + showGens.map(g => `<th class="gen-header">${g}-е поколение</th>`).join('');
+
+  // Тело
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+
+  showClans.forEach(clanId => {
+    const clan = CLANS.find(c => c.id === clanId);
+    if (!clan) return;
+    const tr = document.createElement('tr');
+    
+    // Ячейка клана
+    const tdClan = document.createElement('td');
+    tdClan.innerHTML = `<div class="clan-cell"><span class="clan-dot" style="background:${clan.color}"></span>${clan.name}</div>`;
+    tr.appendChild(tdClan);
+
+    // Ячейки поколений
+    showGens.forEach(gen => {
+      const td = document.createElement('td');
+      let chars = characters.filter(c => c.clan === clanId && c.gen === gen);
+      
+      if (searchName) {
+        chars = chars.filter(c => c.name.toLowerCase().includes(searchName));
+      }
+
+      if (chars.length === 0) {
+        td.innerHTML = '<span style="color:var(--fg-muted);opacity:0.3;font-size:0.8rem">—</span>';
+      } else {
+        td.innerHTML = chars.map(c => renderCharEntry(c)).join('');
+      }
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function renderCharEntry(c) {
+  const clan = CLANS.find(cl => cl.id === c.clan);
+  let badges = '';
+  if (c.status === 'player') badges += `<span class="char-badge badge-player">Игрок</span> `;
+  if (c.status === 'nosheet') badges += `<span class="char-badge badge-nosheet">Нет листа</span> `;
+  if (c.status === 'dead') badges += `<span class="char-badge badge-nosheet">Убит</span> `;
+  if (c.custom) badges += `<span class="char-badge badge-custom">Свой</span> `;
+
+  return `
+    <div class="char-entry ${c.status === 'player' ? 'player-char' : ''} ${c.status === 'nosheet' ? 'no-sheet' : ''}"
+         onclick="openDetail(${c.id})" style="border-left-color: ${clan ? clan.color : 'var(--accent)'}">
+      <div class="char-name">${c.name}</div>
+      ${c.sire ? `<div class="char-detail">Сир: ${c.sire}</div>` : ''}
+      ${badges ? `<div>${badges}</div>` : ''}
+      <div class="char-actions" onclick="event.stopPropagation()">
+        <button class="char-action-btn" onclick="openEditModal(${c.id})" title="Редактировать"><i class="fas fa-pen"></i></button>
+        <button class="char-action-btn" onclick="deleteCharacter(${c.id})" title="Удалить"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+  `;
+}
+
+// === КАРТОЧКИ ПОКОЛЕНИЙ ===
+function renderGenerationCards() {
+  const container = document.getElementById('genCards');
+  const gens = [6,7,8,9,10,11];
+  const genDescriptions = {
+    6: 'Старейшины глубокой древности. Их кровь могущественна, а власть — непререкаема. Могут иметь до 10 точек в Дисциплинах.',
+    7: 'Древние старейшины, правящие городами и регионами. Их интриги формируют политику Каинитского общества.',
+    8: 'Старейшины и Примогены. Основная политическая сила в городе — именно они управляют повседневной жизнью Камарильи.',
+    9: 'Анчильты — «дети» старейшин. Начинают приобретать реальное влияние, но ещё зависят от покровителей.',
+    10: 'Неонаты — новообращённые с определённым статусом. Они доказывают свою ценность и ищут место в иерархии.',
+    11: 'Младшие неонаты и котерии. Только что Становлённые, они — самое низшее звено в вампирском обществе.'
+  };
+
+  container.innerHTML = gens.map(g => {
+    const chars = characters.filter(c => c.gen === g);
+    return `
+      <div style="margin-bottom:2rem; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.5rem; border-left:4px solid var(--accent)">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+          <h3 style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--accent-light)">${g}-е Поколение</h3>
+          <span style="font-size:0.8rem;color:var(--fg-muted);padding:0.2rem 0.6rem;border:1px solid var(--border);border-radius:4px">${chars.length} персонажей</span>
+        </div>
+        <p style="color:var(--fg-muted);font-size:0.9rem;line-height:1.6;margin-bottom:1rem">${genDescriptions[g]}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+          ${chars.map(c => {
+            const clan = CLANS.find(cl => cl.id === c.clan);
+            return `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.3rem 0.7rem;border-radius:5px;background:rgba(255,255,255,0.04);border:1px solid var(--border);font-size:0.82rem;cursor:pointer" onclick="openDetail(${c.id})">
+              <span style="width:8px;height:8px;border-radius:50%;background:${clan ? clan.color : '#666'}"></span>
+              ${c.name}
+              ${c.custom ? '<i class="fas fa-star" style="font-size:0.6rem;color:#81c784"></i>' : ''}
+            </span>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// === СТАТИСТИКА ===
+function updateStats() {
+  document.getElementById('statChars').textContent = characters.length;
+  const clans = new Set(characters.map(c => c.clan));
+  document.getElementById('statClans').textContent = clans.size;
+  const gens = new Set(characters.map(c => c.gen));
+  document.getElementById('statGens').textContent = gens.size;
+}
+
+// === МОДАЛЬНОЕ ОКНО: ДОБАВИТЬ ===
+function openAddModal() {
+  document.getElementById('modalTitle').textContent = 'Добавить персонажа';
+  document.getElementById('editId').value = '';
+  document.getElementById('fName').value = '';
+  document.getElementById('fClan').value = 'ventrue';
+  document.getElementById('fGen').value = '9';
+  document.getElementById('fSire').value = '';
+  document.getElementById('fDesc').value = '';
+  document.getElementById('fStatus').value = 'active';
+  document.getElementById('addModal').classList.add('active');
+}
+
+function openEditModal(id) {
+  const c = characters.find(ch => ch.id === id);
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = 'Редактировать персонажа';
+  document.getElementById('editId').value = id;
+  document.getElementById('fName').value = c.name;
+  document.getElementById('fClan').value = c.clan;
+  document.getElementById('fGen').value = c.gen;
+  document.getElementById('fSire').value = c.sire || '';
+  document.getElementById('fDesc').value = c.desc || '';
+  document.getElementById('fStatus').value = c.status;
+  document.getElementById('addModal').classList.add('active');
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('active');
+}
+
+function saveCharacter() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) {
+    showToast('Укажите имя персонажа', 'error');
+    return;
+  }
+
+  const editId = document.getElementById('editId').value;
+  const data = {
+    name,
+    clan: document.getElementById('fClan').value,
+    gen: parseInt(document.getElementById('fGen').value),
+    sire: document.getElementById('fSire').value.trim(),
+    desc: document.getElementById('fDesc').value.trim(),
+    status: document.getElementById('fStatus').value,
+    custom: true
+  };
+
+  if (editId) {
+    // Редактирование
+    const idx = characters.findIndex(c => c.id === parseInt(editId));
+    if (idx !== -1) {
+      characters[idx] = { ...characters[idx], ...data };
+      showToast(`${name} обновлён`, 'success');
+    }
+  } else {
+    // Добавление
+    characters.push({ id: nextId++, ...data });
+    showToast(`${name} добавлен в кровные линии`, 'success');
+  }
+
+  saveData();
+  renderTable();
+  renderGenerationCards();
+  updateStats();
+  closeAddModal();
+}
+
+function deleteCharacter(id) {
+  const c = characters.find(ch => ch.id === id);
+  if (!c) return;
+  if (!confirm(`Удалить ${c.name}?`)) return;
+  characters = characters.filter(ch => ch.id !== id);
+  saveData();
+  renderTable();
+  renderGenerationCards();
+  updateStats();
+  showToast(`${c.name} удалён`, 'success');
+}
+
+// === МОДАЛЬНОЕ ОКНО: ДЕТАЛИ ===
+function openDetail(id) {
+  const c = characters.find(ch => ch.id === id);
+  if (!c) return;
+  const clan = CLANS.find(cl => cl.id === c.clan);
+
+  const content = document.getElementById('detailContent');
+  content.innerHTML = `
+    <div class="char-title">${c.name}</div>
+    <div class="char-clan-gen">
+      <span style="display:inline-flex;align-items:center;gap:0.3rem">
+        <span style="width:10px;height:10px;border-radius:50%;background:${clan ? clan.color : '#666'}"></span>
+        ${clan ? clan.name : 'Неизвестный клан'} — ${c.gen}-е поколение
+      </span>
+      ${c.custom ? '<span style="margin-left:0.5rem;color:#81c784;font-size:0.8rem"><i class="fas fa-star"></i> Пользовательский</span>' : ''}
+    </div>
+    <div class="char-description">${c.desc || 'Нет описания.'}</div>
+    
+    ${c.sire ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Сир</div>
+        <div style="color:var(--fg);font-size:0.9rem">${c.sire}</div>
+      </div>
+    ` : ''}
+    
+    <div class="detail-section">
+      <div class="detail-section-title">Статус</div>
+      <div style="color:var(--fg);font-size:0.9rem">
+        ${c.status === 'active' ? 'Активен' : ''}
+        ${c.status === 'player' ? '<span style="color:var(--gold)">Персонаж игрока</span>' : ''}
+        ${c.status === 'nosheet' ? '<span style="color:var(--fg-muted)">Нет листа</span>' : ''}
+        ${c.status === 'dead' ? '<span style="color:#e57373">Уничтожен</span>' : ''}
+      </div>
+    </div>
+    
+    ${clan ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Дисциплины клана</div>
+        <div class="trait-list">
+          ${clan.disciplines.map(d => `<span class="disc-tag">${d}</span>`).join('')}
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Слабость клана</div>
+        <div style="color:var(--fg-muted);font-size:0.85rem;font-style:italic">${clan.weakness}</div>
+      </div>
+    ` : ''}
+    
+    <div style="margin-top:1.5rem;display:flex;gap:0.5rem">
+      <button class="btn" onclick="closeDetailModal();openEditModal(${c.id})">
+        <i class="fas fa-pen"></i> Редактировать
+      </button>
+      <button class="btn btn-danger" onclick="closeDetailModal();deleteCharacter(${c.id})">
+        <i class="fas fa-trash"></i> Удалить
+      </button>
+    </div>
+  `;
+
+  document.getElementById('detailModal').classList.add('active');
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModal').classList.remove('active');
+}
+
+// === ЭКСПОРТ ===
+function exportData() {
+  const json = JSON.stringify(characters, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'chicago_bloodlines.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Данные экспортированы', 'success');
+}
+
+// === ТОСТ ===
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// === ТАБЫ ===
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  
+  const btn = document.querySelector(`.tab-btn[onclick*="'${tabId}'"]`);
+  if (btn) btn.classList.add('active');
+  
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+
+// === СКРОЛЛ ===
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setupNavScroll() {
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('mainNav');
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+}
+
+function setupScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// === ЗАКРЫТИЕ МОДАЛОВ ПО ОВЕРЛЕЮ ===
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('active');
+    }
+  });
+});
+
+// === ЗАПУСК ===
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
